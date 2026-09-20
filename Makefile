@@ -41,10 +41,18 @@ validate:
 	@${CNT_BIN} compose --project-directory "$(ROOT)" config -q
 
 	@echo "Validating authelia configuration..."
-	@${CNT_BIN} compose --project-directory "$(ROOT)" run --rm authelia \
+	@${CNT_BIN} compose --project-directory "$(ROOT)" run --rm --no-deps authelia \
 		authelia config validate --config /config/configuration.yml
+
+	@if [[ -f "$(ROOT)/caddy/Caddyfile" ]]; then \
+		echo "Validating Caddy configuration..."; \
+		${CNT_BIN} compose --project-directory "$(ROOT)" run --rm --no-deps caddy \
+			caddy validate --config "/etc/caddy/Caddyfile"; \
+	fi
 
 .PHONY: clean
 clean:
+	@if [[ -d "$(ROOT)" ]]; then \
+		${CNT_BIN} compose --project-directory "$(ROOT)" down --volumes --remove-orphans ||: ; \
+	fi
 	@rm -rf "$(ROOT)"
-	@${CNT_BIN} compose --project-directory "$(ROOT)" down --volumes --remove-orphans 2&> /dev/null || true

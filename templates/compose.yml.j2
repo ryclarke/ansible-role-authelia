@@ -2,7 +2,7 @@
 name: {{ authelia_project_name | to_json }}
 
 secrets:
-{% for secret in authelia_secrets_files | map(attribute='key') %}
+{% for secret in authelia_secrets_files | map(attribute='name') %}
   {{ secret }}:
     file: {{ authelia_root }}/secrets/{{ secret }}
 {% endfor %}
@@ -45,7 +45,7 @@ services:
     ports:
       - "127.0.0.1:{{ authelia_port }}:9091"
     secrets:
-{% for secret in authelia_service_secrets.authelia | intersect(authelia_secrets_files | map(attribute='key')) %}
+{% for secret in authelia_service_secrets.authelia | intersect(authelia_secrets_files | map(attribute='name')) %}
       - {{ secret }}
 {% endfor %}
     environment:
@@ -95,7 +95,7 @@ services:
     ports:
       - 127.0.0.1:17170:17170
     secrets:
-{% for secret in authelia_service_secrets.ldap | intersect(authelia_secrets_files | map(attribute='key')) %}
+{% for secret in authelia_service_secrets.ldap | intersect(authelia_secrets_files | map(attribute='name')) %}
       - {{ secret }}
 {% endfor %}
     environment:
@@ -117,7 +117,7 @@ services:
     volumes:
       - {{ authelia_root }}/data/postgres:/var/lib/postgresql/18/docker:Z
     secrets:
-{% for secret in authelia_service_secrets.postgres | intersect(authelia_secrets_files | map(attribute='key')) %}
+{% for secret in authelia_service_secrets.postgres | intersect(authelia_secrets_files | map(attribute='name')) %}
       - {{ secret }}
 {% endfor %}
     environment:
@@ -140,7 +140,7 @@ services:
       - {{ authelia_root }}/secrets/redis.conf:/usr/local/etc/redis/redis.conf:Z,ro
     command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
     secrets:
-{% for secret in authelia_service_secrets.redis | intersect(authelia_secrets_files | map(attribute='key')) %}
+{% for secret in authelia_service_secrets.redis | intersect(authelia_secrets_files | map(attribute='name')) %}
       - {{ secret }}
 {% endfor %}
 {% endif %}

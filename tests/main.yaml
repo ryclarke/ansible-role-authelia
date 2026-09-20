@@ -54,9 +54,9 @@
 
     - name: Resolve SELinux labels for file secrets
       # respects the container runtime override from the Makefile.
-      ansible.builtin.command: "{{ lookup('env', 'CNT_BIN')
-        | default('docker', true) }} compose run -v '{{ authelia_root }}/secrets:/run/secrets:z,ro' --rm authelia true"
-      args:
+      ansible.builtin.command:
+        cmd: "{{ lookup('env', 'CNT_BIN')
+          | default('docker', true) }} compose run -v '{{ authelia_root }}/secrets:/run/secrets:z,ro' --rm --no-deps authelia true"
         chdir: "{{ authelia_root }}"
       changed_when: false
 

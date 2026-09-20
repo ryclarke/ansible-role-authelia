@@ -68,6 +68,9 @@
           'path': authelia_root ~ '/caddy', 'mode': '0750',
           'owner': 'root', 'group': 'root'
         }, {
+          'path': authelia_root ~ '/caddy/sites', 'mode': '0750',
+          'owner': authelia_hardening.caddy.user, 'group': authelia_hardening.caddy.group
+        }, {
           'path': authelia_root ~ '/data/caddy', 'mode': '0700',
           'owner': authelia_hardening.caddy.user, 'group': authelia_hardening.caddy.group
         }] }}"
@@ -111,33 +114,33 @@
 - name: Compute required secrets files
   ansible.builtin.set_fact:
     authelia_secrets_files:
-      - key: JWT_SECRET
-        source_var: authelia_jwt_secret
-      - key: SESSION_SECRET
-        source_var: authelia_session_secret
-      - key: LDAP_PASSWORD
-        source_var: authelia_ldap_password
-      - key: STORAGE_ENCRYPTION_KEY
-        source_var: authelia_storage_encryption_key
+      - name: JWT_SECRET
+        content: "{{ authelia_jwt_secret }}"
+      - name: SESSION_SECRET
+        content: "{{ authelia_session_secret }}"
+      - name: LDAP_PASSWORD
+        content: "{{ authelia_ldap_password }}"
+      - name: STORAGE_ENCRYPTION_KEY
+        content: "{{ authelia_storage_encryption_key }}"
 
 - name: Append SMTP internal secrets (if enabled)
   ansible.builtin.set_fact:
-    authelia_secrets_files: "{{ authelia_secrets_files + [{'key': 'SMTP_PASSWORD', 'source_var': 'authelia_smtp_password'}] }}"
+    authelia_secrets_files: "{{ authelia_secrets_files + [{'name': 'SMTP_PASSWORD', 'content': authelia_smtp_password}] }}"
   when: authelia_smtp_enabled
 
 - name: Append LLDAP internal secrets (managed only)
   ansible.builtin.set_fact:
-    authelia_secrets_files: "{{ authelia_secrets_files + [{'key': 'LDAP_JWT_SECRET', 'source_var': 'authelia_ldap_jwt_secret'}] }}"
+    authelia_secrets_files: "{{ authelia_secrets_files + [{'name': 'LDAP_JWT_SECRET', 'content': authelia_ldap_jwt_secret}] }}"
   when: authelia_ldap_managed
 
 - name: Append Postgres storage password (postgres backend)
   ansible.builtin.set_fact:
-    authelia_secrets_files: "{{ authelia_secrets_files + [{'key': 'STORAGE_PASSWORD', 'source_var': 'authelia_storage_postgres_password'}] }}"
+    authelia_secrets_files: "{{ authelia_secrets_files + [{'name': 'STORAGE_PASSWORD', 'content': authelia_storage_postgres_password}] }}"
   when: authelia_storage_backend == 'postgres'
 
 - name: Append Redis password (optional)
   ansible.builtin.set_fact:
-    authelia_secrets_files: "{{ authelia_secrets_files + [{'key': 'REDIS_PASSWORD', 'source_var': 'authelia_redis_password'}] }}"
+    authelia_secrets_files: "{{ authelia_secrets_files + [{'name': 'REDIS_PASSWORD', 'content': authelia_redis_password}] }}"
   when:
     - authelia_redis_enabled
     - authelia_redis_password | default('', true) | length > 0

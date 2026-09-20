@@ -20,6 +20,7 @@ authelia_caddy_plugins:
   - github.com/caddy-dns/cloudflare
 authelia_caddy_env:
   CF_API_TOKEN: ci-dummy-cf-token
+authelia_caddy_sites_dir: "{{ playbook_dir }}/hooks/"
 
 authelia_render_assertions:
   required_files: [compose.yml, .env, authelia/configuration.yml, caddy/Dockerfile, caddy/Caddyfile]
