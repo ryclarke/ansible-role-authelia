@@ -43,6 +43,7 @@
     owner: "{{ authelia_render_owner | default(authelia_hardening.authelia.user) }}"
     group: "{{ authelia_render_group | default(authelia_hardening.authelia.group) }}"
     mode: "{{ authelia_render_mode | default('0644') }}"
+  changed_when: false
 
 - name: Configure Caddy build context
   ansible.builtin.template:
@@ -130,7 +131,7 @@
 
 - name: Validate rendered Caddy configuration
   ansible.builtin.command:
-    cmd: docker compose run --rm --no-deps caddy caddy validate
+    cmd: docker compose run --rm --no-deps caddy caddy validate --config /etc/caddy/Caddyfile
     chdir: "{{ authelia_root }}"
   changed_when: false
   when:
