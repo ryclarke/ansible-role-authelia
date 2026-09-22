@@ -1,9 +1,9 @@
-FROM {{ authelia_images_caddy_builder }} AS builder
+FROM {{ authelia_caddy_builder_image }} AS builder
 RUN xcaddy build \
 {% for plugin in authelia_caddy_plugins %}
     --with {{ plugin }} \
 {% endfor %}
     --output /caddy
 
-FROM {{ authelia_images_caddy_runtime }}
+FROM {{ authelia_caddy_runtime_image }}
 COPY --from=builder /caddy /usr/bin/caddy

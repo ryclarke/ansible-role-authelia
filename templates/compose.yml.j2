@@ -30,7 +30,7 @@ secrets:
 services:
   authelia:
     container_name: authelia
-    image: {{ authelia_images_authelia }}
+    image: {{ authelia_image }}
     restart: unless-stopped
     networks: [authelia]
 {% set deps = [] %}{% if authelia_ldap_managed %}{% set _ = deps.append('ldap') %}{% endif %}
@@ -86,7 +86,7 @@ services:
 
   ldap:
     container_name: authelia_ldap
-    image: {{ authelia_images_lldap }}
+    image: {{ authelia_lldap_image }}
     restart: unless-stopped
     networks: [authelia]
 {{ hardened('ldap') }}
@@ -110,7 +110,7 @@ services:
 
   database:
     container_name: authelia_db
-    image: {{ authelia_images_postgres }}
+    image: {{ authelia_postgres_image }}
     restart: unless-stopped
     networks: [authelia]
 {{ hardened('postgres') }}
@@ -130,7 +130,7 @@ services:
 
   redis:
     container_name: authelia_redis
-    image: {{ authelia_images_redis }}
+    image: {{ authelia_redis_image }}
     restart: unless-stopped
     networks: [authelia]
 {{ hardened('redis') }}

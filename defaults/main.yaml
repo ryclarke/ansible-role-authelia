@@ -1,11 +1,24 @@
 ---
-authelia_project_name: authelia
-authelia_network_name: "{{ authelia_project_name }}"
-authelia_root: "/opt/{{ authelia_project_name }}"
+# Image versions: replace with pinned tags for stability
+authelia_version: 'latest'
+authelia_image: "docker.io/authelia/authelia:{{ authelia_version }}"
 
-authelia_port: 9091
-authelia_log_level: info
+authelia_caddy_builder_version: '2-builder'
+authelia_caddy_builder_image: "caddy:{{ authelia_caddy_builder_version }}"
 
+authelia_caddy_runtime_version: '2-alpine'
+authelia_caddy_runtime_image: "caddy:{{ authelia_caddy_runtime_version }}"
+
+authelia_lldap_version: 'latest-alpine-rootless'
+authelia_lldap_image: "docker.io/lldap/lldap:{{ authelia_lldap_version }}"
+
+authelia_postgres_version: '18-alpine'
+authelia_postgres_image: "postgres:{{ authelia_postgres_version }}"
+
+authelia_redis_version: '8-alpine'
+authelia_redis_image: "redis:{{ authelia_redis_version }}"
+
+# Domain configuration
 authelia_domain: ""  # required
 authelia_subdomain: auth
 authelia_timezone: "Etc/UTC"
@@ -14,6 +27,7 @@ authelia_assets: ""
 
 authelia_ntp: udp://time.cloudflare.com:123
 authelia_default_2fa: totp
+authelia_log_level: info
 
 # Replace the entire default configuration template (ADVANCED)
 authelia_configuration_template: configuration.yml.j2
@@ -131,19 +145,18 @@ authelia_redis:
   host: authelia_redis
   port: 6379
 
+# Compose project configuration
+authelia_project_name: authelia
+authelia_network_name: "{{ authelia_project_name }}"
+authelia_root: "/opt/{{ authelia_project_name }}"
+authelia_port: 9091
+
 # Extra services (and environment variables) to deploy into the Compose project.
 authelia_extra_compose_services: {}
 authelia_extra_compose_envs: {}
 
 # Extra tasks file to import before the deploy stage.
 authelia_extra_tasks: ""
-
-authelia_images_authelia: "docker.io/authelia/authelia:latest"
-authelia_images_caddy_builder: "caddy:2-builder"
-authelia_images_caddy_runtime: "caddy:2-alpine"
-authelia_images_lldap: "docker.io/lldap/lldap:latest-alpine-rootless"
-authelia_images_postgres: "postgres:18-alpine"
-authelia_images_redis: "redis:8-alpine"
 
 authelia_service_secrets:
   authelia: [JWT_SECRET, SESSION_SECRET, SMTP_PASSWORD, LDAP_PASSWORD, STORAGE_ENCRYPTION_KEY, STORAGE_PASSWORD, REDIS_PASSWORD]
