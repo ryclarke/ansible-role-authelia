@@ -25,7 +25,7 @@
     mode: "{{ authelia_render_mode | default('0440') }}"
   no_log: true
   loop: "{{ authelia_secrets_files }}"
-  notify: reconcile
+  notify: reconcile authelia
 
 - name: Build Authelia configuration
   ansible.builtin.template:
@@ -45,39 +45,6 @@
     mode: "{{ authelia_render_mode | default('0644') }}"
   changed_when: false
 
-- name: Configure Caddy build context
-  ansible.builtin.template:
-    src: "{{ authelia_role_source_path }}/templates/caddy.Dockerfile.j2"
-    dest: "{{ authelia_root }}/caddy/Dockerfile"
-    owner: "{{ authelia_render_owner | default('root') }}"
-    group: "{{ authelia_render_group | default('root') }}"
-    mode: "{{ authelia_render_mode | default('0600') }}"
-  notify: reconcile
-  when: authelia_caddy_managed
-
-- name: Build Caddyfile
-  ansible.builtin.copy:
-    src: "{{ authelia_role_source_path }}/files/Caddyfile"
-    dest: "{{ authelia_root }}/caddy/Caddyfile"
-    owner: "{{ authelia_render_owner | default(authelia_hardening.caddy.user) }}"
-    group: "{{ authelia_render_group | default(authelia_hardening.caddy.group) }}"
-    mode: "{{ authelia_render_mode | default('0600') }}"
-  notify: reload caddy
-  when: authelia_caddy_managed
-
-- name: Build Caddy site configs
-  ansible.builtin.copy:
-    src: "{{ authelia_caddy_sites_dir }}/"
-    dest: "{{ authelia_root }}/caddy/sites/"
-    owner: "{{ authelia_render_owner | default(authelia_hardening.caddy.user) }}"
-    group: "{{ authelia_render_group | default(authelia_hardening.caddy.group) }}"
-    mode: "{{ authelia_render_mode | default('0600') }}"
-    directory_mode: "{{ authelia_render_mode | default('0700') }}"
-  notify: reload caddy
-  when:
-    - authelia_caddy_managed
-    - authelia_caddy_sites_dir | default('', true) | length > 0
-
 - name: Export Redis config
   ansible.builtin.template:
     src: "{{ authelia_role_source_path }}/templates/redis.conf.j2"
@@ -86,7 +53,7 @@
     group: "{{ authelia_render_group | default(authelia_hardening.redis.group) }}"
     mode: "{{ authelia_render_mode | default('0600') }}"
   no_log: true
-  notify: reconcile
+  notify: reconcile authelia
   when:
     - authelia_redis_enabled
     - authelia_redis_managed
@@ -100,7 +67,7 @@
     group: "{{ authelia_render_group | default('root') }}"
     mode: "{{ authelia_render_mode | default('0600') }}"
   no_log: true
-  notify: reconcile
+  notify: reconcile authelia
 
 - name: Build Compose file
   ansible.builtin.template:
@@ -109,7 +76,7 @@
     owner: "{{ authelia_render_owner | default('root') }}"
     group: "{{ authelia_render_group | default('root') }}"
     mode: "{{ authelia_render_mode | default('0600') }}"
-  notify: reconcile
+  notify: reconcile authelia
 
 - name: Validate rendered Compose spec
   ansible.builtin.command:
@@ -126,15 +93,5 @@
     chdir: "{{ authelia_root }}"
   changed_when: false
   when:
-    - not ansible_check_mode
-    - not (authelia_skip_validation | default(false))
-
-- name: Validate rendered Caddy configuration
-  ansible.builtin.command:
-    cmd: docker compose run --rm --no-deps caddy caddy validate --config /etc/caddy/Caddyfile
-    chdir: "{{ authelia_root }}"
-  changed_when: false
-  when:
-    - authelia_caddy_managed
     - not ansible_check_mode
     - not (authelia_skip_validation | default(false))

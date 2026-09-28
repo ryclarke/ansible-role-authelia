@@ -1,5 +1,5 @@
 ---
-# Minimal deployment profile: authelia + lldap, sqlite storage, no redis, no caddy.
+# Minimal deployment profile: authelia + lldap, sqlite storage, no redis.
 
 authelia_project_name: test-authelia
 authelia_domain: example.com
@@ -66,7 +66,6 @@ authelia_render_assertions:
     - "LLDAP_KEY_SEED:"
     - "LLDAP_KEY_FILE:"
   compose_not_contains:
-    - "  caddy:"
     - "  postgres:"
     - "  redis:"
     - "AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE:"

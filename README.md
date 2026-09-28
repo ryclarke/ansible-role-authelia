@@ -1,7 +1,7 @@
 # ansible-role-authelia-docker
 [![CI](https://github.com/ryclarke/ansible-role-authelia-docker/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/ryclarke/ansible-role-authelia-docker/actions/workflows/ci.yaml) [![Ansible Galaxy Import](https://github.com/ryclarke/ansible-role-authelia-docker/actions/workflows/publish.yaml/badge.svg)](https://github.com/ryclarke/ansible-role-authelia-docker/actions/workflows/publish.yaml)
 
-An opinionated Ansible role that deploys a lean, hardened [Authelia](https://www.authelia.com) SSO stack via Docker Compose: **Authelia + lldap** (Lightweight LDAP), with an optional **Caddy** reverse proxy that builds a custom image with the DNS plugins of your choice, and optional **PostgreSQL + Redis** services.
+An opinionated Ansible role that deploys a lean, hardened [Authelia](https://www.authelia.com) SSO stack via Docker Compose: **Authelia + lldap** (Lightweight LDAP), with optional **PostgreSQL + Redis** services.
 
 Designed for single-instance homelab or small-business deployments. Boring, proven, minimal moving parts — every container runs as a pinned unprivileged user with `cap_drop: ALL`, `no-new-privileges`, and a read-only rootfs where possible.
 
@@ -163,44 +163,6 @@ The role is opinionated by default but doesn't lock you in. Each backing service
 
 Unmanaged services simply aren't deployed — no orphan containers, directories, or secrets.
 
-### Caddy Reverse Proxy
-Enable the bundled Caddy with custom DNS plugins:
-```yaml
-authelia_caddy_managed: true
-authelia_caddy_plugins:
-  - github.com/caddy-dns/cloudflare
-authelia_caddy_env:
-  CF_API_TOKEN: "..."
-```
-
-The role's Caddyfile is intentionally minimal — a hardened global block and a single
-directive:
-
-```caddy
-import /etc/caddy/sites/*.caddy
-```
-
-Everything else is yours. Any .caddy file you place in `{{ authelia_root }}/caddy/sites/` is [imported](https://caddyserver.com/docs/caddyfile/directives/import) into the running config (glob expansion is alphabetical, so use numeric prefixes to control ordering — snippets first, sites after):
-```
-caddy/sites/
-├── 00-common.caddy
-├── 10-example-com.caddy
-└── 20-other-domain.caddy
-```
-
-A minimal site that fronts an internal service with Authelia [forward-auth](https://www.authelia.com/reference/guides/proxy-authorization/):
-```caddy
-# 10-example-com.caddy
-app.example.com {
-	forward_auth 127.0.0.1:9091 {
-		uri /api/authz/forward-auth
-		copy_headers Remote-User Remote-Groups Remote-Email Remote-Name
-	}
-
-	reverse_proxy 192.168.1.50:3000
-}
-```
-
 ### SMTP Configuration
 Authelia requires email to send password resets, notifications, and verification codes. You can configure this in three ways depending on your needs.
 
@@ -344,8 +306,6 @@ All container images are customizable, defaulting to upstream tags:
 | `authelia_images_lldap`         | `docker.io/lldap/lldap:latest-alpine-rootless` |
 | `authelia_images_postgres`      | `postgres:18-alpine`                           |
 | `authelia_images_redis`         | `redis:8-alpine`                               |
-| `authelia_images_caddy_builder` | `caddy:2-builder`                              |
-| `authelia_images_caddy_runtime` | `caddy:2-alpine`                               |
 
 Production deployments should pin these to digests (`image@sha256:...`) — `latest` defaults are convenient for first runs but make the deployed version dependent on pull timing, which undermines reproducibility and supply-chain auditing.
 

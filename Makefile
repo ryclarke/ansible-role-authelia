@@ -44,12 +44,6 @@ validate:
 	@${CNT_BIN} compose --project-directory "$(ROOT)" run --rm --no-deps authelia \
 		authelia config validate --config /config/configuration.yml
 
-	@if [[ -f "$(ROOT)/caddy/Caddyfile" ]]; then \
-		echo "Validating Caddy configuration..."; \
-		${CNT_BIN} compose --project-directory "$(ROOT)" run --rm --no-deps caddy \
-			caddy validate --config "/etc/caddy/Caddyfile"; \
-	fi
-
 .PHONY: clean
 clean:
 	@if [[ -d "$(ROOT)" ]]; then \

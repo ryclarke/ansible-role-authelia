@@ -76,8 +76,6 @@ authelia_extra_compose_services:
   whoami:
     image: traefik/whoami:latest
 
-authelia_extra_tasks: "{{ playbook_dir }}/hooks/test-stage.yaml"
-
 # real PEM key (to pass config validation) — should _NEVER_ be used outside of testing
 authelia_oidc_jwks_private_key: |
   -----BEGIN PRIVATE KEY-----
@@ -118,7 +116,6 @@ authelia_ldap_key_seed: "ci-dummy-key-seed-0123456789"
 # Explicitly not set (exercise the defaults):
 #   authelia_storage_backend      -> local (sqlite)
 #   authelia_redis_enabled        -> false
-#   authelia_caddy_managed        -> false
 
 ## ---------------------------------- ##
 ##     EXPECTED OUTPUT ASSERTIONS     ##
@@ -167,7 +164,6 @@ authelia_render_assertions:
     - "LLDAP_KEY_SEED:"
     - "LLDAP_KEY_FILE:"
   compose_not_contains:
-    - "  caddy:"
     - "  postgres:"
     - "  redis:"
     - "AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE:"

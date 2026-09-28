@@ -3,7 +3,7 @@ galaxy_info:
   namespace: ryclarke
   role_name: authelia
   author: Ryan Clarke
-  description: Deploys a lean, hardened Authelia SSO stack (authelia and lldap, plus optional caddy, postgres, redis) via Docker Compose
+  description: Deploys a lean, hardened Authelia SSO stack (authelia and lldap, plus optional postgres/redis) via Docker Compose
   license: MIT
   min_ansible_version: "2.15"
 
@@ -29,10 +29,8 @@ galaxy_info:
     - authelia
     - ldap
     - lldap
-    - caddy
     - docker
     - compose
-    - reverseproxy
     - security
 
 dependencies: []

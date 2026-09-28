@@ -26,6 +26,6 @@ authelia_render_assertions:
   configuration_contains: ["redis:", "host: authelia_redis"]
   configuration_not_contains: ["postgres:"]
   compose_contains: ["  redis:", "AUTHELIA_SESSION_REDIS_PASSWORD_FILE:", REDIS_PASSWORD]
-  compose_not_contains: ["  database:", "  caddy:"]
+  compose_not_contains: ["  database:"]
   environment_contains: [LLDAP_KEY_SEED]
   environment_not_contains: []

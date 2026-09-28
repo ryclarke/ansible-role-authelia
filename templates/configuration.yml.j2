@@ -20,7 +20,7 @@ log:
 
 totp:
   disable: false
-  issuer: "{{ authelia_subdomain }}.{{ authelia_domain }}"
+  issuer: "{{ authelia_host }}"
 
 webauthn:
   disable: false
@@ -41,7 +41,6 @@ ntp:
 
 {% if (authelia_network_definitions | length > 0) or (authelia_user_attributes | length > 0) %}
 definitions:
-{% endif %}
 {% if authelia_network_definitions | length > 0 %}
   network:
     {{ authelia_network_definitions | to_nice_yaml(sort_keys=False) | indent(4) }}
@@ -49,6 +48,7 @@ definitions:
 {% if authelia_user_attributes | length > 0 %}
   user_attributes:
     {{ authelia_user_attributes | to_nice_yaml(sort_keys=False) | indent(4) }}
+{% endif %}
 {% endif %}
 authentication_backend:
   password_change:
@@ -71,14 +71,12 @@ access_control:
     {{ authelia_acl_rules | to_nice_yaml(sort_keys=False) | indent(4) }}
 session:
   cookies:
-    - domain: {{ authelia_domain | to_json }}
-      authelia_url: "https://{{ authelia_subdomain }}.{{ authelia_domain }}"
+    {{ authelia_session_cookies | to_nice_yaml(sort_keys=False) | indent(4) }}
 {% if authelia_redis_enabled %}
-
   redis:
     {{ authelia_redis | to_nice_yaml(sort_keys=False) | indent(4) }}
-{% endif %}
 
+{% endif %}
 storage:
 {% if authelia_storage_backend == 'postgres' %}
   postgres:
@@ -114,10 +112,8 @@ identity_providers:
 {% endif %}
 
     cors:
-      allowed_origins:
-        - "https://{{ authelia_domain }}"
-
-      allowed_origins_from_client_redirect_uris: false
+      allowed_origins: {{ authelia_oidc_allowed_origins | to_json }}
+      allowed_origins_from_client_redirect_uris: {{ authelia_oidc_allowed_origins_from_clients | to_json }}
 
     clients:
       {{ authelia_oidc_clients | to_nice_yaml(sort_keys=False) | indent(6) }}

@@ -2,9 +2,5 @@
 - name: Prepare — validations, directory structure, secrets composition
   ansible.builtin.import_tasks: prepare.yaml
 
-- name: Stage — custom pre-deploy preparation tasks
-  ansible.builtin.include_tasks: "{{ authelia_extra_tasks }}"
-  when: authelia_extra_tasks | default('', true) | length > 0
-
 - name: Deploy — configuration, compose, environment files
   ansible.builtin.import_tasks: deploy.yaml

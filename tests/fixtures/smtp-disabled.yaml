@@ -21,6 +21,6 @@ authelia_render_assertions:
   configuration_contains: ["filesystem:", "/config/notification.txt"]
   configuration_not_contains: ["smtp:", SMTP_PASSWORD]
   compose_contains: ["  authelia:", "  ldap:"]
-  compose_not_contains: ["  caddy:", "  database:", "  redis:"]
+  compose_not_contains: ["  database:", "  redis:"]
   environment_contains: []
   environment_not_contains: []

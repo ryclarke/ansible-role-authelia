@@ -145,14 +145,9 @@
     - name: Skip compose reconciliation during render tests
       ansible.builtin.debug:
         msg: Compose reconciliation is disabled for render tests
-      listen: reconcile
+      listen: reconcile authelia
 
     - name: Skip Authelia restart during render tests
       ansible.builtin.debug:
         msg: Authelia restart is disabled for render tests
       listen: restart authelia
-
-    - name: Skip Caddy reload during render tests
-      ansible.builtin.debug:
-        msg: Caddy reload is disabled for render tests
-      listen: reload caddy

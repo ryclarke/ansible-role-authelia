@@ -1,10 +1,10 @@
 ---
-- name: Reconcile compose stack
+- name: Reconcile authelia compose stack
   community.docker.docker_compose_v2:
     project_src: "{{ authelia_root }}"
     remove_orphans: true
     state: present
-  listen: reconcile
+  listen: reconcile authelia
 
 - name: Restart authelia
   community.docker.docker_compose_v2:
@@ -12,13 +12,4 @@
     services: [authelia]
     state: restarted
   changed_when: false
-  when: not authelia_first_run | default(true)
   listen: restart authelia
-
-- name: Reload caddy
-  ansible.builtin.command:
-    cmd: docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile
-    chdir: "{{ authelia_root }}"
-  changed_when: false
-  when: not authelia_first_run | default(true)
-  listen: reload caddy

@@ -33,15 +33,6 @@
     authelia_ldap_user_final: >-
       {{ authelia_ldap_user | default('UID=admin,OU=people,' ~ authelia_ldap_base_dn_final, true) }}
 
-- name: Detect existing deployment
-  ansible.builtin.stat:
-    path: "{{ authelia_root }}/compose.yaml"
-  register: authelia_compose_state
-
-- name: Record first-run status
-  ansible.builtin.set_fact:
-    authelia_first_run: "{{ not authelia_compose_state.stat.exists }}"
-
 - name: Compute service data directories
   ansible.builtin.set_fact:
     authelia_directories:
@@ -61,20 +52,6 @@
         owner: "{{ authelia_hardening.authelia.user }}"
         group: "{{ authelia_hardening.authelia.group }}"
         mode: "0750"
-
-- name: Add caddy directories (managed only)
-  ansible.builtin.set_fact:
-    authelia_directories: "{{ authelia_directories + [{
-          'path': authelia_root ~ '/caddy', 'mode': '0750',
-          'owner': 'root', 'group': 'root'
-        }, {
-          'path': authelia_root ~ '/caddy/sites', 'mode': '0750',
-          'owner': authelia_hardening.caddy.user, 'group': authelia_hardening.caddy.group
-        }, {
-          'path': authelia_root ~ '/data/caddy', 'mode': '0700',
-          'owner': authelia_hardening.caddy.user, 'group': authelia_hardening.caddy.group
-        }] }}"
-  when: authelia_caddy_managed
 
 - name: Add ldap data directory (managed only)
   ansible.builtin.set_fact:
@@ -149,8 +126,6 @@
   ansible.builtin.set_fact:
     authelia_compose_env: >-
       {{ {} | combine(
-          (authelia_caddy_env | default({}, true) | dict2items | selectattr('value', 'defined')
-            | items2dict) if authelia_ldap_managed and (authelia_caddy_env | default({}, true)) is mapping else {},
           {'LLDAP_KEY_SEED': authelia_ldap_key_seed} if authelia_ldap_managed else {},
           authelia_extra_compose_envs | default({}, true) if (authelia_extra_compose_envs | default({}, true)) is mapping else {}
         ) }}

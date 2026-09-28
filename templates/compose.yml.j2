@@ -63,25 +63,6 @@ services:
 {% if authelia_redis_enabled and authelia_redis_password %}
       AUTHELIA_SESSION_REDIS_PASSWORD_FILE: /run/secrets/REDIS_PASSWORD
 {% endif %}
-{% if authelia_caddy_managed %}
-
-  caddy:
-    container_name: caddy
-    build:
-      context: {{ authelia_root }}/caddy
-    restart: unless-stopped
-    network_mode: host
-{{ hardened('caddy') }}
-    volumes:
-      - {{ authelia_root }}/caddy/Caddyfile:/etc/caddy/Caddyfile:z,ro
-      - {{ authelia_root }}/caddy/sites:/etc/caddy/sites:z,ro
-      - {{ authelia_root }}/data/caddy:/data:Z
-    environment:
-      TZ: "{{ authelia_timezone }}"
-{% for key in authelia_caddy_env.keys() | list %}
-      {{ key }}: "${ {{- key -}} :?unset in .env}"
-{% endfor %}
-{% endif %}
 {% if authelia_ldap_managed %}
 
   ldap:

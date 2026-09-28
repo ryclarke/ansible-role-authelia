@@ -26,6 +26,6 @@ authelia_render_assertions:
   configuration_contains: ["postgres:", "address: tcp://authelia_db:5432"]
   configuration_not_contains: ["  local:"]
   compose_contains: ["  database:", "POSTGRES_USER:", "POSTGRES_PASSWORD_FILE:", "AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE:", "  ldap:"]
-  compose_not_contains: ["  redis:", "  caddy:"]
+  compose_not_contains: ["  redis:"]
   environment_contains: []
   environment_not_contains: []
