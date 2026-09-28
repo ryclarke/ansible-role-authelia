@@ -125,8 +125,6 @@ authelia_render_assertions:
     - compose.yml
     - .env
     - authelia/configuration.yml
-  required_directories:
-    - data/custom
   required_secrets:
     - JWT_SECRET
     - SESSION_SECRET
