@@ -1,7 +1,7 @@
 # ansible-role-authelia
 [![CI](https://github.com/ryclarke/ansible-role-authelia/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/ryclarke/ansible-role-authelia/actions/workflows/ci.yaml) [![Ansible Galaxy Import](https://github.com/ryclarke/ansible-role-authelia/actions/workflows/publish.yaml/badge.svg)](https://github.com/ryclarke/ansible-role-authelia/actions/workflows/publish.yaml)
 
-An opinionated Ansible role that deploys a lean, hardened [Authelia](https://www.authelia.com) SSO stack via Docker Compose: **Authelia + lldap** (Lightweight LDAP), with optional **PostgreSQL + Redis** services.
+An opinionated Ansible role that deploys a lean, hardened [Authelia](https://www.authelia.com) SSO stack via Docker Compose: **Authelia + lldap** ([Lightweight LDAP](https://github.com/lldap/lldap)), with optional **PostgreSQL + Redis** services.
 
 Designed for single-instance homelab or small-business deployments. Boring, proven, minimal moving parts — every container runs as a pinned unprivileged user with `cap_drop: ALL`, `no-new-privileges`, and a read-only rootfs where possible.
 
